@@ -28,7 +28,7 @@ uint16_t sensorValues[SensorCount];
 
 // Clockwise and counter-clockwise definitions.
 // Depending on how you wired your motors, you may need to swap.
-#define FORWARD  1
+#define FORWARD 1
 #define REVERSE 0
 
 // Motor definitions to make life easier:
@@ -42,7 +42,7 @@ uint16_t sensorValues[SensorCount];
 #define DIRB 4 // Direction control for motor B
 #define PWMB 11 // PWM control (speed) for motor B
 
-#define ONOFF 2 // on off switch
+#define ON_OFF 2 // on off switch
 
 ////Alternate pins:
 //#define DIRA 8 // Direction control for motor A
@@ -53,7 +53,7 @@ uint16_t sensorValues[SensorCount];
 
 void setup()
 {
-    // configure the sensors
+  // configure the sensors
   qtr.setTypeAnalog();
   qtr.setSensorPins((const uint8_t[]){A0, A1, A2, A3}, SensorCount);
   qtr.setEmitterPin(2);
@@ -62,7 +62,7 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH); // turn on Arduino's LED to indicate we are in calibration mode
 
-  pinMode(ONOFF, INPUT);
+  pinMode(ON_OFF, INPUT);
   
 //  // analogRead() takes about 0.1 ms on an AVR.
 //  // 0.1 ms per sensor * 4 samples per sensor read (default) * 6 sensors
@@ -98,14 +98,14 @@ void setup()
 void loop()
 {
   
-  if ( digitalRead(ONOFF) == 1 ) {
+  if ( digitalRead(ON_OFF) == 1 ) {
 //      uint16_t position = sensorLoop();
       driveArdumoto(MOTOR_A, FORWARD, 255);
       driveArdumoto(MOTOR_B, FORWARD, 255);
-      Serial.println(digitalRead(ONOFF));
+      Serial.println(digitalRead(ON_OFF));
 
   } else {
-    Serial.println(digitalRead(ONOFF));
+    Serial.println(digitalRead(ON_OFF));
     stopArdumoto(MOTOR_A);
     stopArdumoto(MOTOR_B);
   }
