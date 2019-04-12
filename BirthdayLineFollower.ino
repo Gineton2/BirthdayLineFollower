@@ -32,8 +32,8 @@ uint16_t sensorValues[SensorCount];
 #define REVERSE 0
 
 // Motor definitions to make life easier:
-#define MOTOR_A 0
-#define MOTOR_B 1
+#define MOTOR_R 0
+#define MOTOR_L 1
 
 // Pin Assignments //
 //Default pins:
@@ -43,6 +43,9 @@ uint16_t sensorValues[SensorCount];
 #define PWMB 11 // PWM control (speed) for motor B
 
 #define ON_OFF 2 // on off switch
+
+// speed consts
+#define MULTIPLIER .5
 
 ////Alternate pins:
 //#define DIRA 8 // Direction control for motor A
@@ -56,108 +59,72 @@ void setup()
   // configure the sensors
   qtr.setTypeAnalog();
   qtr.setSensorPins((const uint8_t[]){A0, A1, A2, A3}, SensorCount);
-  qtr.setEmitterPin(2);
+  //qtr.setEmitterPin(2);
 
-  //delay(500);
+  delay(500);
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH); // turn on Arduino's LED to indicate we are in calibration mode
 
-  pinMode(ON_OFF, INPUT);
+  //pinMode(ON_OFF, INPUT);
   
 //  // analogRead() takes about 0.1 ms on an AVR.
 //  // 0.1 ms per sensor * 4 samples per sensor read (default) * 6 sensors
 //  // * 10 reads per calibrate() call = ~24 ms per calibrate() call.
 //  // Call calibrate() 400 times to make calibration take about 10 seconds.
-//  for (uint16_t i = 0; i < 400; i++)
-//  {
-//    qtr.calibrate();
-//  }
-//  digitalWrite(LED_BUILTIN, LOW); // turn off Arduino's LED to indicate we are through with calibration
-//
+  for (uint16_t i = 0; i < 400; i++)
+  {
+    qtr.calibrate();
+  }
+  digitalWrite(LED_BUILTIN, LOW); // turn off Arduino's LED to indicate we are through with calibration
+
 //  // print the calibration minimum values measured when emitters were on
   Serial.begin(9600);
-//  for (uint8_t i = 0; i < SensorCount; i++)
-//  {
-//    Serial.print(qtr.calibrationOn.minimum[i]);
-//    Serial.print(' ');
-//  }
-//  Serial.println();
-//
-//  // print the calibration maximum values measured when emitters were on
-//  for (uint8_t i = 0; i < SensorCount; i++)
-//  {
-//    Serial.print(qtr.calibrationOn.maximum[i]);
-//    Serial.print(' ');
-//  }
-//  Serial.println();
-//  Serial.println();
-//  delay(1000);
+  for (uint8_t i = 0; i < SensorCount; i++)
+  {
+    Serial.print(qtr.calibrationOn.minimum[i]);
+    Serial.print(' ');
+  }
+  Serial.println();
+
+  // print the calibration maximum values measured when emitters were on
+  for (uint8_t i = 0; i < SensorCount; i++)
+  {
+    Serial.print(qtr.calibrationOn.maximum[i]);
+    Serial.print(' ');
+  }
+  Serial.println();
+  Serial.println();
+  delay(1000);
   setupArdumoto(); // Set all pins as outputs
 }
 
 void loop()
 {
-  
-  if ( digitalRead(ON_OFF) == 1 ) {
-//      uint16_t position = sensorLoop();
-      driveArdumoto(MOTOR_A, FORWARD, 255);
-      driveArdumoto(MOTOR_B, FORWARD, 255);
-      Serial.println(digitalRead(ON_OFF));
+  uint16_t position = sensorLoop();
 
+
+  if (position < 1500 && position > 1100) {
+    driveArdumoto(MOTOR_R, FORWARD, (255*MULTIPLIER));
+    driveArdumoto(MOTOR_L, FORWARD, (255*MULTIPLIER));
+  } else if (position < 1100) {
+    driveArdumoto(MOTOR_R, FORWARD, (255*MULTIPLIER));
+    driveArdumoto(MOTOR_L, FORWARD, (60*MULTIPLIER));
   } else {
-    Serial.println(digitalRead(ON_OFF));
-    stopArdumoto(MOTOR_A);
-    stopArdumoto(MOTOR_B);
+    driveArdumoto(MOTOR_R, FORWARD, 60*MULTIPLIER);
+    driveArdumoto(MOTOR_L, FORWARD, 255*MULTIPLIER);
   }
-//  if (position < 2500) {
-//    driveArdumoto(MOTOR_A, FORWARD, 255);
-//    driveArdumoto(MOTOR_B, FORWARD, 255);
-//  } else {
-//    driveArdumoto(MOTOR_B, FORWARD, 255);
-//    driveArdumoto(MOTOR_A, FORWARD, 120);
-//  }
-//  // Drive motor A (and only motor A) at various speeds, then stop.
-//  driveArdumoto(MOTOR_A, REVERSE, 255); // Set motor A to REVERSE at max
-//  delay(1000);  // Motor A will spin as set for 1 second
-//  driveArdumoto(MOTOR_A, FORWARD, 127);  // Set motor A to FORWARD at half
-//  delay(1000);  // Motor A will keep trucking for 1 second 
-//  stopArdumoto(MOTOR_A);  // STOP motor A 
-//
-//  // Drive motor B (and only motor B) at various speeds, then stop.
-//  driveArdumoto(MOTOR_B, REVERSE, 255); // Set motor B to REVERSE at max
-//  delay(1000);  // Motor B will spin as set for 1 second
-//  driveArdumoto(MOTOR_B, FORWARD, 127);  // Set motor B to FORWARD at half
-//  delay(1000);  // Motor B will keep trucking for 1 second
-//  stopArdumoto(MOTOR_B);  // STOP motor B 
-//
-//  // Drive both
-//  driveArdumoto(MOTOR_A, FORWARD, 255);  // Motor A at max speed.
-//  driveArdumoto(MOTOR_B, FORWARD, 255);  // Motor B at max speed.
-//  delay(1000);  // Drive forward for a second
-//  // Now go backwards at half that speed:
-//  driveArdumoto(MOTOR_A, REVERSE, 127);  // Motor A at max speed.
-//  driveArdumoto(MOTOR_B, REVERSE, 127);  // Motor B at max speed.
-//  delay(1000);  // Drive forward for a second
-//
-//  // Now spin in place!
-//  driveArdumoto(MOTOR_A, FORWARD, 255);  // Motor A at max speed.
-//  driveArdumoto(MOTOR_B, REVERSE, 255);  // Motor B at max speed.
-//  delay(2000);  // Drive forward for a second
-//  stopArdumoto(MOTOR_A);  // STOP motor A 
-//  stopArdumoto(MOTOR_B);  // STOP motor B 
-
 
 }
 
 // driveArdumoto drives 'motor' in 'dir' direction at 'spd' speed
 void driveArdumoto(byte motor, byte dir, byte spd)
 {
-  if (motor == MOTOR_A)
+  if (motor == MOTOR_R)
   {
     digitalWrite(DIRA, dir);
     analogWrite(PWMA, spd);
   }
-  else if (motor == MOTOR_B)
+  else if (motor == MOTOR_L)
   {
     digitalWrite(DIRB, dir);
     analogWrite(PWMB, spd);
@@ -170,9 +137,9 @@ uint16_t sensorLoop()
   // from 0 to 5000 (for a white line, use readLineWhite() instead)
   uint16_t position = qtr.readLineBlack(sensorValues);
 
-  // print the sensor values as numbers from 0 to 1000, where 0 means maximum
-  // reflectance and 1000 means minimum reflectance, followed by the line
-  // position
+//   print the sensor values as numbers from 0 to 1000, where 0 means maximum
+//   reflectance and 1000 means minimum reflectance, followed by the line
+//   position
   for (uint8_t i = 0; i < SensorCount; i++)
   {
     Serial.print(sensorValues[i]);
@@ -180,8 +147,11 @@ uint16_t sensorLoop()
   }
   Serial.println(position);
 
-  delay(250);
+  //delay(250);
 
+  //1300 is about straight
+  //800-1000 line to left
+  //2000 line to right
   return position;
 }
 // stopArdumoto makes a motor stop
