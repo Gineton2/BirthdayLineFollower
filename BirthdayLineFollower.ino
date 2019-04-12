@@ -45,7 +45,7 @@ uint16_t sensorValues[SensorCount];
 #define ON_OFF 2 // on off switch
 
 // speed consts
-#define MULTIPLIER .5
+#define MULTIPLIER .75
 
 ////Alternate pins:
 //#define DIRA 8 // Direction control for motor A
@@ -108,9 +108,9 @@ void loop()
     driveArdumoto(MOTOR_L, FORWARD, (255*MULTIPLIER));
   } else if (position < 1100) {
     driveArdumoto(MOTOR_R, FORWARD, (255*MULTIPLIER));
-    driveArdumoto(MOTOR_L, FORWARD, (60*MULTIPLIER));
+    driveArdumoto(MOTOR_L, FORWARD, (0*MULTIPLIER));
   } else {
-    driveArdumoto(MOTOR_R, FORWARD, 60*MULTIPLIER);
+    driveArdumoto(MOTOR_R, FORWARD, 0*MULTIPLIER);
     driveArdumoto(MOTOR_L, FORWARD, 255*MULTIPLIER);
   }
 
