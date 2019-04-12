@@ -75,18 +75,13 @@ void loop()
     calibrateSensors();
   }
   uint16_t position = sensorLoop();
+  position = position/1300;
 
   if (digitalRead(ON_OFF)) {
-    if (position < 1500 && position > 1100) {
-      driveArdumoto(MOTOR_R, FORWARD, (255*MULTIPLIER));
-      driveArdumoto(MOTOR_L, FORWARD, (255*MULTIPLIER));
-    } else if (position < 1100) {
-      driveArdumoto(MOTOR_R, FORWARD, (255*MULTIPLIER));
-      driveArdumoto(MOTOR_L, FORWARD, (0*MULTIPLIER));
-    } else {
-      driveArdumoto(MOTOR_R, FORWARD, 0*MULTIPLIER);
-      driveArdumoto(MOTOR_L, FORWARD, 255*MULTIPLIER);
-    }
+     
+    driveArdumoto(MOTOR_R, FORWARD, (255*(MULTIPLIER*(1/position))));
+    driveArdumoto(MOTOR_L, FORWARD, (255*(MULTIPLIER*position)));
+
   } else {
     stopArdumoto(MOTOR_R);
     stopArdumoto(MOTOR_L);
