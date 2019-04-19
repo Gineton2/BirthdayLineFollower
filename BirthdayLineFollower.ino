@@ -27,7 +27,7 @@ const uint8_t SensorCount = 4;
 uint16_t sensorValues[SensorCount];
 
 // "Queue" to track last n measurements of line position
-const in qSize = 10;
+const int qSize = 1;
 int sensorQ[qSize];
 int qInd = 0;
 int total = 0;
