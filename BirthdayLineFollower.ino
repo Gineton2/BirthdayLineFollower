@@ -84,6 +84,7 @@ void setup()
 
 
   setupArdumoto(); // Set all pins as outputs
+  setupQ();
 }
 
 void loop()
@@ -91,17 +92,22 @@ void loop()
   if ( digitalRead(CALIBRATOR) ) {
     calibrateSensors();
   }
-  uint16_t position = sensorLoop();
-
+  int16_t position = sensorLoop();
+  int16_t absPosition = abs(position - 1300);
+  int16_t power = max( min( 255.0 * (800-absPosition) / 800 , 255), 0);
+  Serial.println("position, Abspos and power: ");
+  Serial.println(position);
+  Serial.println(absPosition);
+  Serial.println(power);
   if (digitalRead(ON_OFF)) {
     if (position < 1500 && position > 1100) {
       driveArdumoto(MOTOR_R, FORWARD, (255*MULTIPLIER));
       driveArdumoto(MOTOR_L, FORWARD, (255*MULTIPLIER));
     } else if (position < 1100) {
       driveArdumoto(MOTOR_R, FORWARD, (255*MULTIPLIER));
-      driveArdumoto(MOTOR_L, FORWARD, (0*MULTIPLIER));
+      driveArdumoto(MOTOR_L, FORWARD, (power*MULTIPLIER));
     } else {
-      driveArdumoto(MOTOR_R, FORWARD, 0*MULTIPLIER);
+      driveArdumoto(MOTOR_R, FORWARD, power*MULTIPLIER);
       driveArdumoto(MOTOR_L, FORWARD, 255*MULTIPLIER);
     }
   } else {
@@ -124,6 +130,19 @@ void driveArdumoto(byte motor, byte dir, byte spd)
     digitalWrite(DIRB, dir);
     analogWrite(PWMB, spd);
   }  
+}
+
+void push(int val)
+{
+  // subtract the last reading:
+  total = total - sensorQ[qInd];
+  sensorQ[qInd] = val;
+  // add the reading to the total:
+  total = total + val;
+  // advance to the next position in the array:
+  qInd = (qInd + 1) % qSize;
+  // calculate the average:
+  avg = total / qSize;
 }
 
 uint16_t sensorLoop()
@@ -149,7 +168,8 @@ uint16_t sensorLoop()
   //1300 is about straight
   //800-1000 line to left
   //2000 line to right
-  return position;
+  push(position);
+  return avg;
 }
 // stopArdumoto makes a motor stop
 void stopArdumoto(byte motor)
