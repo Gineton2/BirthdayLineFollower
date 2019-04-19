@@ -26,6 +26,16 @@ QTRSensors qtr;
 const uint8_t SensorCount = 4;
 uint16_t sensorValues[SensorCount];
 
+<<<<<<< HEAD
+=======
+// "Queue" to track last n measurements of line position
+const int qSize = 4;
+int sensorQ[qSize];
+int qInd = 0;
+int total = 0;
+int avg = 0;
+
+>>>>>>> averaged-sensor-data
 // Clockwise and counter-clockwise definitions.
 // Depending on how you wired your motors, you may need to swap.
 #define FORWARD 1
@@ -46,7 +56,7 @@ uint16_t sensorValues[SensorCount];
 #define CALIBRATOR 12 //calibration switch
 
 // speed consts
-#define MULTIPLIER .75
+#define MULTIPLIER 1
 
 ////Alternate pins:
 //#define DIRA 8 // Direction control for motor A
@@ -54,6 +64,17 @@ uint16_t sensorValues[SensorCount];
 //#define DIRB 7 // Direction control for motor B
 //#define PWMB 10 // PWM control (speed) for motor B
 
+<<<<<<< HEAD
+=======
+void setupQ()
+{
+  for (int i = 0; i < qSize; i++) {
+    // Set whole queue to "line perfectly centered"
+    sensorQ[i] = 1300;
+  }
+  total = 1300 * qSize;
+}
+>>>>>>> averaged-sensor-data
 
 void setup()
 {
@@ -118,6 +139,7 @@ uint16_t sensorLoop()
 //   print the sensor values as numbers from 0 to 1000, where 0 means maximum
 //   reflectance and 1000 means minimum reflectance, followed by the line
 //   position
+  if (false) {
   for (uint8_t i = 0; i < SensorCount; i++)
   {
     Serial.print(sensorValues[i]);
@@ -125,7 +147,7 @@ uint16_t sensorLoop()
   }
   Serial.println(position);
   Serial.println("Switch: " + digitalRead(ON_OFF));
-
+  }
   //delay(250);
 
   //1300 is about straight
