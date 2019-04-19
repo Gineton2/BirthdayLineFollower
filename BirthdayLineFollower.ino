@@ -26,13 +26,6 @@ QTRSensors qtr;
 const uint8_t SensorCount = 4;
 uint16_t sensorValues[SensorCount];
 
-// "Queue" to track last n measurements of line position
-const in qSize = 10;
-int sensorQ[qSize];
-int qInd = 0;
-int total = 0;
-int avg = 0;
-
 // Clockwise and counter-clockwise definitions.
 // Depending on how you wired your motors, you may need to swap.
 #define FORWARD 1
@@ -61,13 +54,6 @@ int avg = 0;
 //#define DIRB 7 // Direction control for motor B
 //#define PWMB 10 // PWM control (speed) for motor B
 
-void setupQ()
-{
-  for (int i = 0; i < qSize; i++) {
-    // Set whole queue to "line perfectly centered"
-    sensorQ[i] = 1300;
-  }
-}
 
 void setup()
 {
@@ -81,7 +67,6 @@ void setup()
 
 
   setupArdumoto(); // Set all pins as outputs
-  setupQ();
 }
 
 void loop()
@@ -124,19 +109,6 @@ void driveArdumoto(byte motor, byte dir, byte spd)
   }  
 }
 
-void push(int val)
-{
-  // subtract the last reading:
-  total = total - sensorQ[qInd];
-  sensorQ[qInd] = val;
-  // add the reading to the total:
-  total = total + val;
-  // advance to the next position in the array:
-  qInd = (qInd + 1) % qSize;
-  // calculate the average:
-  avg = total / qSize;
-}
-
 uint16_t sensorLoop()
 {
   // read calibrated sensor values and obtain a measure of the line position
@@ -159,8 +131,7 @@ uint16_t sensorLoop()
   //1300 is about straight
   //800-1000 line to left
   //2000 line to right
-  push(position);
-  return avg;
+  return position;
 }
 // stopArdumoto makes a motor stop
 void stopArdumoto(byte motor)
