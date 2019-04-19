@@ -26,8 +26,6 @@ QTRSensors qtr;
 const uint8_t SensorCount = 4;
 uint16_t sensorValues[SensorCount];
 
-<<<<<<< HEAD
-=======
 // "Queue" to track last n measurements of line position
 const int qSize = 4;
 int sensorQ[qSize];
@@ -35,7 +33,6 @@ int qInd = 0;
 int total = 0;
 int avg = 0;
 
->>>>>>> averaged-sensor-data
 // Clockwise and counter-clockwise definitions.
 // Depending on how you wired your motors, you may need to swap.
 #define FORWARD 1
@@ -64,8 +61,7 @@ int avg = 0;
 //#define DIRB 7 // Direction control for motor B
 //#define PWMB 10 // PWM control (speed) for motor B
 
-<<<<<<< HEAD
-=======
+
 void setupQ()
 {
   for (int i = 0; i < qSize; i++) {
@@ -74,7 +70,7 @@ void setupQ()
   }
   total = 1300 * qSize;
 }
->>>>>>> averaged-sensor-data
+
 
 void setup()
 {
