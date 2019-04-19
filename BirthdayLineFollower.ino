@@ -27,7 +27,7 @@ const uint8_t SensorCount = 4;
 uint16_t sensorValues[SensorCount];
 
 // "Queue" to track last n measurements of line position
-const in qSize = 10;
+const int qSize = 4;
 int sensorQ[qSize];
 int qInd = 0;
 int total = 0;
@@ -53,7 +53,7 @@ int avg = 0;
 #define CALIBRATOR 12 //calibration switch
 
 // speed consts
-#define MULTIPLIER .75
+#define MULTIPLIER 1
 
 ////Alternate pins:
 //#define DIRA 8 // Direction control for motor A
@@ -67,6 +67,7 @@ void setupQ()
     // Set whole queue to "line perfectly centered"
     sensorQ[i] = 1300;
   }
+  total = 1300 * qSize;
 }
 
 void setup()
@@ -146,6 +147,7 @@ uint16_t sensorLoop()
 //   print the sensor values as numbers from 0 to 1000, where 0 means maximum
 //   reflectance and 1000 means minimum reflectance, followed by the line
 //   position
+  if (false) {
   for (uint8_t i = 0; i < SensorCount; i++)
   {
     Serial.print(sensorValues[i]);
@@ -153,7 +155,7 @@ uint16_t sensorLoop()
   }
   Serial.println(position);
   Serial.println("Switch: " + digitalRead(ON_OFF));
-
+  }
   //delay(250);
 
   //1300 is about straight
