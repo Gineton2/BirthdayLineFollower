@@ -92,22 +92,22 @@ void loop()
   if ( digitalRead(CALIBRATOR) ) {
     calibrateSensors();
   }
-  int16_t position = sensorLoop();
-  int16_t absPosition = abs(position - 1300);
-  int16_t power = max( min( 255.0 * (800-absPosition) / 800 , 255), 0);
-  Serial.println("position, Abspos and power: ");
-  Serial.println(position);
-  Serial.println(absPosition);
-  Serial.println(power);
+  uint16_t position = sensorLoop();
+//  int16_t absPosition = abs(position - 1300);
+//  int16_t power = max( min( 255.0 * (800-absPosition) / 800 , 255), 0);
+//  Serial.println("position, Abspos and power: ");
+//  Serial.println(position);
+//  Serial.println(absPosition);
+//  Serial.println(power);
   if (digitalRead(ON_OFF)) {
     if (position < 1500 && position > 1100) {
       driveArdumoto(MOTOR_R, FORWARD, (255*MULTIPLIER));
       driveArdumoto(MOTOR_L, FORWARD, (255*MULTIPLIER));
     } else if (position < 1100) {
       driveArdumoto(MOTOR_R, FORWARD, (255*MULTIPLIER));
-      driveArdumoto(MOTOR_L, FORWARD, (power*MULTIPLIER));
+      driveArdumoto(MOTOR_L, FORWARD, (0*MULTIPLIER));
     } else {
-      driveArdumoto(MOTOR_R, FORWARD, power*MULTIPLIER);
+      driveArdumoto(MOTOR_R, FORWARD, 0*MULTIPLIER);
       driveArdumoto(MOTOR_L, FORWARD, 255*MULTIPLIER);
     }
   } else {
