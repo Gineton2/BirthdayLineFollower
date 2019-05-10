@@ -1,12 +1,15 @@
-    /* Ardumoto Example Sketch
+/* Ardumoto Example Sketch
   by: Jim Lindblom
   date: November 8, 2013
   license: Public domain. Please use, reuse, and modify this 
   sketch!
-
   Adapted to v20 hardware by: Marshall Taylor
   date: March 31, 2017
-
+  
+  Adapted for Birthday Line Following Robot for CCSF class 48L
+  by: Julie Kew and Gineton Alencar
+  date: May 9, 2019
+  
   Three useful functions are defined:
     setupArdumoto() -- Setup the Ardumoto Shield pins
     driveArdumoto([motor], [direction], [speed]) -- Drive [motor] 
@@ -26,8 +29,6 @@ QTRSensors qtr;
 const uint8_t SensorCount = 4;
 uint16_t sensorValues[SensorCount];
 
-<<<<<<< HEAD
-=======
 // "Queue" to track last n measurements of line position
 const int qSize = 1;
 int sensorQ[qSize];
@@ -35,7 +36,6 @@ int qInd = 0;
 int total = 0;
 int avg = 0;
 
->>>>>>> averaged-sensor-data
 // Clockwise and counter-clockwise definitions.
 // Depending on how you wired your motors, you may need to swap.
 #define FORWARD 1
@@ -64,8 +64,6 @@ int avg = 0;
 //#define DIRB 7 // Direction control for motor B
 //#define PWMB 10 // PWM control (speed) for motor B
 
-<<<<<<< HEAD
-=======
 void setupQ()
 {
   for (int i = 0; i < qSize; i++) {
@@ -74,7 +72,6 @@ void setupQ()
   }
   total = 1300 * qSize;
 }
->>>>>>> averaged-sensor-data
 
 void setup()
 {
@@ -88,6 +85,7 @@ void setup()
 
 
   setupArdumoto(); // Set all pins as outputs
+  setupQ();
 }
 
 void loop()
@@ -130,6 +128,19 @@ void driveArdumoto(byte motor, byte dir, byte spd)
   }  
 }
 
+void push(int val)
+{
+  // subtract the last reading:
+  total = total - sensorQ[qInd];
+  sensorQ[qInd] = val;
+  // add the reading to the total:
+  total = total + val;
+  // advance to the next position in the array:
+  qInd = (qInd + 1) % qSize;
+  // calculate the average:
+  avg = total / qSize;
+}
+
 uint16_t sensorLoop()
 {
   // read calibrated sensor values and obtain a measure of the line position
@@ -153,7 +164,8 @@ uint16_t sensorLoop()
   //1300 is about straight
   //800-1000 line to left
   //2000 line to right
-  return position;
+  push(position);
+  return avg;
 }
 // stopArdumoto makes a motor stop
 void stopArdumoto(byte motor)
